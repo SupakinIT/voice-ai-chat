@@ -1,519 +1,279 @@
 <!doctype html>
 <html lang="th">
-
 <head>
-    <meta charset="utf-8" />
-    <title>ChomGPT-1</title>
-    <link rel="shortcut icon" href="/backend/static/favicon.ico">
-    <link rel="stylesheet" href="thememode.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans Thai', sans-serif;
-            height: 100vh;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            grid-template-rows: 1fr auto;
-            grid-template-areas:
-                "sidebar chat"
-                "sidebar input";
-            background: #f0f2f5;
-        }
-
-        /* Sidebar */
-        #sidebar {
-            grid-area: sidebar;
-            background: #111214;
-            color: #e5e7eb;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #sidebar header {
-            padding: 16px;
-            border-bottom: 1px solid #26272b;
-        }
-
-        #new-chat {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #2b2d31;
-            background: #1f2125;
-            color: #e5e7eb;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        #sessions {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px 8px 16px;
-        }
-
-        .session-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .session-item.active {
-            background: #2b2d31;
-        }
-
-        .session-title {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .del-btn {
-            background: transparent;
-            color: #a1a1aa;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .del-btn:hover {
-            color: #fda4af;
-        }
-
-        /* Chat area */
-        #chat-container {
-            grid-area: chat;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .user {
-            align-self: flex-end;
-            background: #0078ff;
-            color: #fff;
-        }
-
-        .assistant {
-            align-self: flex-start;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-        }
-
-        /* Input bar */
-        #input-bar {
-            grid-area: input;
-            display: flex;
-            gap: 8px;
-            padding: 12px;
-            background: #fff;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        #prompt {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        #send {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 8px;
-            background: #0078ff;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        #send:hover {
-            background: #0064d3;
-        }
-
-        #mic-btn,
-        #tts-btn {
-            padding: 0 12px;
-            min-width: 44px;
-            font-size: 18px;
-            border: 1px solid #d1d5db;
-            background: #fff;
-            color: #111;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        #mic-btn.listening {
-            border-color: #0078ff;
-            box-shadow: 0 0 0 2px rgba(0, 120, 255, .15);
-        }
-
-        .message.assistant .bubble-actions {
-            margin-top: 6px;
-            font-size: 14px;
-            color: #6b7280;
-            display: flex;
-            gap: 8px;
-        }
-
-        .message.assistant .speak-msg {
-            cursor: pointer;
-        }
-
-        .message.assistant .speak-msg:hover {
-            color: #111;
-        }
-    </style> -->
+  <meta charset="utf-8" />
+  <title>ChomGPT-1</title>
+  <link rel="icon" href="/static/favicon.ico">
+  <link rel="stylesheet" href="thememode.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
-    <!-- Sidebar -->
-    <aside id="sidebar">
-        <header>
-            <button id="new-chat">+ New chat</button>
-            <button id="theme-toggle" title="Toggle theme">🌙</button>
-        </header>
-        <div id="sessions"></div>
-    </aside>
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <header>
+      <button id="new-chat">+ New chat</button>
+      <button id="theme-toggle" title="Toggle theme">🌙</button>
+    </header>
+    <div id="sessions"></div>
+  </aside>
 
-    <!-- Chat -->
-    <main id="chat-container"></main>
+  <!-- Chat -->
+  <main id="chat-container"></main>
 
-    <!-- Input -->
-    <footer id="input-bar">
-        <textarea id="prompt" rows="5" placeholder="พิมพ์แล้วกด Enter เพื่อส่ง (Shift+Enter ขึ้นบรรทัดใหม่)"></textarea>
-        <button id="mic-btn" title="ถามด้วยเสียง">🎙</button>
-        <!-- <button id="tts-btn" title="อ่านคำตอบล่าสุด">🔊</button> -->
-        <button id="send">ส่ง</button>
-        <audio id="tts-player" hidden></audio>
-    </footer>
+  <!-- Input -->
+  <footer id="input-bar">
+    <textarea id="prompt" rows="5" placeholder="พิมพ์แล้วกด Enter เพื่อส่ง (Shift+Enter ขึ้นบรรทัดใหม่)"></textarea>
+    <button id="mic-btn" title="ถามด้วยเสียง">🎙</button>
+    <button id="send">ส่ง</button>
+    <audio id="tts-player" hidden></audio>
+  </footer>
 
-    <script>
-        const API_BASE = "http://localhost:8000";
-        const chatBox = document.getElementById('chat-container');
-        const promptBox = document.getElementById('prompt');
-        const sendBtn = document.getElementById('send');
-        const sessionsEl = document.getElementById('sessions');
-        const newChatBtn = document.getElementById('new-chat');
-        const micBtn = document.getElementById('mic-btn');
-        // const ttsBtn = document.getElementById('tts-btn');
-        const ttsPlayer = document.getElementById('tts-player');
+  <script>
+    const chatBox   = document.getElementById('chat-container');
+    const promptBox = document.getElementById('prompt');
+    const sendBtn   = document.getElementById('send');
+    const sessionsEl= document.getElementById('sessions');
+    const newChatBtn= document.getElementById('new-chat');
+    const micBtn    = document.getElementById('mic-btn');
+    const ttsPlayer = document.getElementById('tts-player');
 
-        let session_id = localStorage.getItem("session_id") || null;
+    let session_id = localStorage.getItem("session_id") || null;
 
-        // ===== API helpers =====
-        async function apiListSessions() {
-            const r = await fetch(`${API_BASE}/api/sessions`);
-            return (await r.json()).sessions;
-        }
-        async function apiCreateSession(id = null) {
-            const res = await fetch(`${API_BASE}/api/sessions`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(id ? { session_id: id } : {}),   // ส่ง JSON (หรือ body ว่าง)
-            });
-            if (!res.ok) throw new Error("create session failed");
-            return await res.json();
-        }
-        async function apiDeleteSession(id) {
-            await fetch(`${API_BASE}/api/sessions/${encodeURIComponent(id)}`, { method: "DELETE" });
-        }
-        async function apiGetHistory(id) {
-            const r = await fetch(`${API_BASE}/api/history?session_id=${encodeURIComponent(id)}`);
-            return await r.json();
-        }
-        async function apiStream(prompt, id) {
-            const fd = new FormData();
-            fd.append("prompt", prompt);
-            fd.append("session_id", id);
-            const res = await fetch(`${API_BASE}/api/chat_stream`, { method: "POST", body: fd });
-            if (!res.ok || !res.body) throw new Error("stream failed");
-            return res.body.getReader();
-        }
+    // ===== API helpers (same-origin) =====
+    async function apiListSessions() {
+      const r = await fetch(`/api/sessions`);
+      return (await r.json()).sessions;
+    }
+    async function apiCreateSession(name) {
+      const res = await fetch(`/api/sessions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: name }),
+      });
+      if (res.status === 409) throw new Error("ชื่อห้องนี้มีอยู่แล้ว");
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.detail || "สร้างห้องไม่สำเร็จ");
+      }
+      return await res.json();
+    }
+    async function apiDeleteSession(id) {
+      await fetch(`/api/sessions/${encodeURIComponent(id)}`, { method: "DELETE" });
+    }
+    async function apiGetHistory(id) {
+      const r = await fetch(`/api/history?session_id=${encodeURIComponent(id)}`);
+      return await r.json();
+    }
+    async function apiStream(prompt, id) {
+      const fd = new FormData();
+      fd.append("prompt", prompt);
+      fd.append("session_id", id);
+      const res = await fetch(`/api/chat_stream`, { method: "POST", body: fd });
+      if (!res.ok || !res.body) throw new Error("stream failed");
+      return res.body.getReader();
+    }
+    async function apiSay(text) {
+      const fd = new FormData();
+      fd.append("text", text);
+      fd.append("lang", "th");
+      return fetch(`/api/say`, { method: "POST", body: fd });
+    }
 
-        // ===== UI helpers =====
-        function renderSessions(list) {
-            sessionsEl.innerHTML = "";
-            list.forEach(item => {
-                const row = document.createElement('div');
-                row.className = 'session-item' + (item.session_id === session_id ? ' active' : '');
-                const title = document.createElement('div');
-                title.className = 'session-title';
-                title.textContent = item.title;
+    // ===== UI =====
+    function renderSessions(list) {
+      sessionsEl.innerHTML = "";
+      if (!list.length) {
+        sessionsEl.innerHTML = "<div style='padding:10px;color:#a1a1aa'>ยังไม่มีห้อง กด + New chat เพื่อสร้าง</div>";
+        return;
+      }
+      list.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'session-item' + (item.session_id === session_id ? ' active' : '');
+        const title = document.createElement('div');
+        title.className = 'session-title';
+        title.textContent = item.title;
+        const del = document.createElement('button');
+        del.className = 'del-btn';
+        del.title = 'Delete';
+        del.textContent = '🗑';
 
-                const del = document.createElement('button');
-                del.className = 'del-btn';
-                del.title = 'Delete';
-                del.textContent = '🗑';
+        row.appendChild(title);
+        row.appendChild(del);
+        sessionsEl.appendChild(row);
 
-                row.appendChild(title);
-                row.appendChild(del);
-                sessionsEl.appendChild(row);
+        row.addEventListener('click', async (e) => {
+          if (e.target === del) return;
+          session_id = item.session_id;
+          localStorage.setItem("session_id", session_id);
+          document.querySelectorAll('.session-item').forEach(x => x.classList.remove('active'));
+          row.classList.add('active');
+          await loadHistoryToChat();
+        });
 
-                row.addEventListener('click', async (e) => {
-                    if (e.target === del) return; // กดลบ จะไม่โหลดห้อง
-                    session_id = item.session_id;
-                    localStorage.setItem("session_id", session_id);
-                    document.querySelectorAll('.session-item').forEach(x => x.classList.remove('active'));
-                    row.classList.add('active');
-                    await loadHistoryToChat();
-                });
-
-                del.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    if (!confirm('ลบห้องนี้?')) return;
-                    await apiDeleteSession(item.session_id);
-                    if (session_id === item.session_id) {
-                        session_id = null;
-                        localStorage.removeItem("session_id");
-                        chatBox.innerHTML = "";
-                    }
-                    await refreshSessions();
-                });
-            });
-        }
-
-        async function speakText(text) {
-            if (!text) return;
-            const fd = new FormData();
-            fd.append("text", text);
-            fd.append("lang", "th");
-            const res = await fetch(`${API_BASE}/api/say`, { method: "POST", body: fd });
-            if (!res.ok) return;
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-            ttsPlayer.src = url;
-            ttsPlayer.hidden = false;
-            ttsPlayer.play();
-        }
-
-        // ปุ่มรวม: อ่านคำตอบล่าสุด (จาก __lastReply หรือ assistant bubble สุดท้าย)
-        // ttsBtn.onclick = () => {
-        //     let text = (window.__lastReply || "").trim();
-        //     if (!text) {
-        //         // หา assistant bubble สุดท้าย
-        //         const msgs = [...chatBox.querySelectorAll('.message.assistant')];
-        //         if (msgs.length) text = msgs[msgs.length - 1].querySelector('.content')?.textContent || msgs[msgs.length - 1].textContent || "";
-        //     }
-        //     speakText(text.trim());
-        // };
-
-        // ========== STT (ถามด้วยเสียง) ==========
-        let rec = null;
-        function startMic() {
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SR) {
-                alert("เบราว์เซอร์นี้ไม่รองรับการฟังเสียง (SpeechRecognition)"); return;
-            }
-            if (rec) return; // ป้องกันกดซ้ำ
-            rec = new SR();
-            rec.lang = "th-TH";
-            rec.interimResults = false;
-            rec.maxAlternatives = 1;
-
-            rec.onstart = () => micBtn.classList.add('listening');
-            rec.onend = () => { micBtn.classList.remove('listening'); rec = null; };
-            rec.onerror = (e) => { micBtn.classList.remove('listening'); rec = null; console.warn("STT error:", e.error); };
-
-            rec.onresult = (e) => {
-                const text = e.results[0][0].transcript;
-                promptBox.value = text;
-                // ส่งข้อความเลยก็ได้:
-                sendPrompt();
-            };
-            rec.start();
-        }
-        micBtn.onclick = startMic;
-
-        // ========== เรนเดอร์ข้อความ + ไอคอน TTS รายบับเบิล ==========
-        function addMessage(role, text) {
-            const wrap = document.createElement('div');
-            wrap.className = `message ${role}`;
-
-            const content = document.createElement('div');
-            content.className = 'content';
-            content.textContent = text;
-
-            wrap.appendChild(content);
-
-            if (role === 'assistant') {
-                const actions = document.createElement('div');
-                actions.className = 'bubble-actions';
-                const speak = document.createElement('span');
-                speak.className = 'speak-msg';
-                speak.title = 'อ่านเสียงข้อความนี้';
-                speak.textContent = '🔊 ฟังข้อความนี้';
-                speak.onclick = () => speakText(content.textContent.trim());
-                actions.appendChild(speak);
-                wrap.appendChild(actions);
-            }
-
-            chatBox.appendChild(wrap);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return wrap;
-        }
-
-        function addMessage(role, text) {
-            const wrap = document.createElement('div');
-            wrap.className = `message ${role}`;
-
-            const content = document.createElement('div');
-            content.className = 'content';
-            content.textContent = text;
-
-            wrap.appendChild(content);
-
-            if (role === 'assistant') {
-                const actions = document.createElement('div');
-                actions.className = 'bubble-actions';
-                const speak = document.createElement('span');
-                speak.className = 'speak-msg';
-                speak.title = 'อ่านเสียงข้อความนี้';
-                speak.textContent = '🔊 ฟังข้อความนี้';
-                speak.onclick = () => speakText(content.textContent.trim());
-                actions.appendChild(speak);
-                wrap.appendChild(actions);
-            }
-
-            chatBox.appendChild(wrap);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return wrap;
-        }
-
-        async function refreshSessions() {
-            const list = await apiListSessions();
-            if (!list.length) {
-                try {
-                    const created = await apiCreateSession();   // สร้างครั้งเดียว
-                    session_id = created.session_id;
-                    localStorage.setItem("session_id", session_id);
-                    const list2 = await apiListSessions();
-                    renderSessions(list2);
-                    return;
-                } catch (e) {
-                    console.error(e);
-                    // โชว์ข้อความบน sidebar หรือ alert ก็ได้
-                    sessionsEl.innerHTML = "<div style='padding:10px;color:#fca5a5'>สร้างห้องไม่สำเร็จ</div>";
-                    return; // หยุด ไม่วนซ้ำ
-                }
-            }
-            if (!session_id) {
-                session_id = list[0].session_id;
-                localStorage.setItem("session_id", session_id);
-            }
-            renderSessions(list);
-        }
-
-        async function loadHistoryToChat() {
-            const data = await apiGetHistory(session_id);
+        del.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (!confirm('ลบห้องนี้?')) return;
+          await apiDeleteSession(item.session_id);
+          if (session_id === item.session_id) {
+            session_id = null;
+            localStorage.removeItem("session_id");
             chatBox.innerHTML = "";
-            for (const m of data.history) {
-                addMessage(m.role, m.content);
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // ===== Send & Stream =====
-        async function sendPrompt() {
-            if (!session_id) { alert("ยังไม่มีห้องแชต กด + New chat เพื่อสร้างก่อน"); return; }
-            const text = promptBox.value.trim();
-            if (!text) return;
-
-            addMessage('user', text);
-            promptBox.value = '';
-            const aiWrap = addMessage('assistant', '');
-            const aiContent = aiWrap.querySelector('.content');
-
-            try {
-                const reader = await apiStream(text, session_id);
-                const decoder = new TextDecoder('utf-8');
-                let full = "";
-
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-                    const chunk = decoder.decode(value, { stream: true });
-                    if (chunk) {
-                        full += chunk;
-                        aiContent.textContent += chunk;
-                        chatBox.scrollTop = chatBox.scrollHeight;
-                    }
-                }
-                window.__lastReply = full.trim();
-                await refreshSessions();
-            } catch (err) {
-                aiContent.textContent = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
-            }
-        }
-
-        // ===== Event bindings =====
-        sendBtn.onclick = sendPrompt;
-        promptBox.addEventListener('keydown', e => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendPrompt(); }
+          }
+          await refreshSessions();
         });
-        newChatBtn.addEventListener('click', async () => {
-            const created = await apiCreateSession();
-            session_id = created.session_id;
-            localStorage.setItem("session_id", session_id);
-            await refreshSessions();
-            await loadHistoryToChat();
-        });
+      });
+    }
 
-        // ===== Init =====
-        (async function init() {
-            await refreshSessions();
-            if (session_id) { await loadHistoryToChat(); }
-        })();
+    async function speakText(text) {
+      if (!text) return;
+      const res = await apiSay(text);
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      ttsPlayer.src = url;
+      ttsPlayer.hidden = false;
+      ttsPlayer.play();
+    }
 
-        const THEME_KEY = "chat_theme"; // 'light' | 'dark'
-        const themeBtn = document.getElementById('theme-toggle');
+    // ไมค์ (Web Speech API)
+    let rec = null;
+    function startMic() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { alert("เบราว์เซอร์นี้ไม่รองรับการฟังเสียง (SpeechRecognition)"); return; }
+      if (rec) return;
+      rec = new SR();
+      rec.lang = "th-TH";
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      rec.onstart  = () => micBtn.classList.add('listening');
+      rec.onend    = () => { micBtn.classList.remove('listening'); rec = null; };
+      rec.onerror  = () => { micBtn.classList.remove('listening'); rec = null; };
+      rec.onresult = (e) => { promptBox.value = e.results[0][0].transcript; sendPrompt(); };
+      rec.start();
+    }
+    micBtn.onclick = startMic;
 
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem(THEME_KEY, theme);
-            // เปลี่ยนไอคอนปุ่ม
-            themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    // เรนเดอร์บับเบิล
+    function addMessage(role, text) {
+      const wrap = document.createElement('div');
+      wrap.className = `message ${role}`;
+      const content = document.createElement('div');
+      content.className = 'content';
+      content.textContent = text;
+      wrap.appendChild(content);
+
+      if (role === 'assistant') {
+        const actions = document.createElement('div');
+        actions.className = 'bubble-actions';
+        const speak = document.createElement('span');
+        speak.className = 'speak-msg';
+        speak.title = 'อ่านเสียงข้อความนี้';
+        speak.textContent = '🔊 ฟังข้อความนี้';
+        speak.onclick = () => speakText(content.textContent.trim());
+        actions.appendChild(speak);
+        wrap.appendChild(actions);
+      }
+
+      chatBox.appendChild(wrap);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return wrap;
+    }
+
+    async function refreshSessions() {
+      const list = await apiListSessions();
+      if (!list.length) {
+        session_id = null;
+        localStorage.removeItem("session_id");
+        renderSessions([]);
+        return;
+      }
+      if (!session_id) {
+        session_id = list[0].session_id;
+        localStorage.setItem("session_id", session_id);
+      }
+      renderSessions(list);
+    }
+
+    async function loadHistoryToChat() {
+      if (!session_id) { chatBox.innerHTML = ""; return; }
+      const data = await apiGetHistory(session_id);
+      chatBox.innerHTML = "";
+      for (const m of data.history) addMessage(m.role, m.content);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // ส่งข้อความ (สตรีม)
+    async function sendPrompt() {
+      if (!session_id) { alert("ยังไม่มีห้องแชต กด + New chat เพื่อสร้างก่อน"); return; }
+      const text = promptBox.value.trim();
+      if (!text) return;
+      addMessage('user', text);
+      promptBox.value = '';
+      const aiWrap = addMessage('assistant', '');
+      const aiContent = aiWrap.querySelector('.content');
+
+      try {
+        const reader  = await apiStream(text, session_id);
+        const decoder = new TextDecoder('utf-8');
+        let full = "";
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          if (chunk) { full += chunk; aiContent.textContent += chunk; chatBox.scrollTop = chatBox.scrollHeight; }
         }
+        window.__lastReply = full.trim();
+        await refreshSessions();
+      } catch {
+        aiContent.textContent = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
+      }
+    }
 
-        function initTheme() {
-            // ถ้ามีใน localStorage ใช้อันนั้นก่อน
-            const saved = localStorage.getItem(THEME_KEY);
-            if (saved === 'light' || saved === 'dark') {
-                applyTheme(saved);
-                return;
-            }
-            // ไม่งั้นดูตามระบบ (prefers-color-scheme)
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            applyTheme(prefersDark ? 'dark' : 'light');
-        }
+    // Events
+    sendBtn.onclick = sendPrompt;
+    promptBox.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendPrompt(); }
+    });
+    newChatBtn.addEventListener('click', async () => {
+      const name = prompt("ตั้งชื่อห้องแชตใหม่:");
+      if (!name) return;
+      try {
+        const created = await apiCreateSession(name);
+        session_id = created.session_id;
+        localStorage.setItem("session_id", session_id);
+        await refreshSessions();
+        await loadHistoryToChat();
+      } catch (e) {
+        alert(e.message || "สร้างห้องไม่สำเร็จ");
+      }
+    });
 
-        themeBtn?.addEventListener('click', () => {
-            const cur = document.documentElement.getAttribute('data-theme') || 'light';
-            applyTheme(cur === 'light' ? 'dark' : 'light');
-        });
+    // Init
+    (async function init() {
+      await refreshSessions();
+      await loadHistoryToChat();
+    })();
 
-        initTheme();
-
-        window.API_BASE = window.API_BASE || "";
-    </script>
+    // ===== Theme (Dark/Light) =====
+    const THEME_KEY = "chat_theme";
+    const themeBtn  = document.getElementById('theme-toggle');
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+    function initTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === 'light' || saved === 'dark') return applyTheme(saved);
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
+      applyTheme(cur === 'light' ? 'dark' : 'light');
+    });
+    initTheme();
+  </script>
 </body>
-
 </html>
