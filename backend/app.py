@@ -119,7 +119,8 @@ def tts_mp3_bytes(text: str, lang: str = "th") -> bytes:
 
 @app.get("/")
 def root():
-    return {"ok": True, "message": "DeepSeek Thai Voice API (stream + memory ready)"}
+    return FileResponse(FRONTEND_DIR / "index.html")
+    # return {"ok": True, "message": "DeepSeek Thai Voice API (stream + memory ready)"}
 
 @app.post("/api/chat")
 def chat(prompt: str = Form(...), session_id: str = Form("default")):
